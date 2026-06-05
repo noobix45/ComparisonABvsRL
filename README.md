@@ -106,13 +106,13 @@ This project explored the boundary between deterministic computation, based on b
 
 ## Appendix A: Complete Logs and Training Graphs
 
-**Figure 1: Response Time per Move** ![Response Time per Move](resources/response_time.png)
+**Figure 1: Response Time per Move** ![Response Time per Move](sources/response_time.png)
 
-**Figure 2: Memory Allocated per Move (Overhead)** ![Overhead Memory Allocated](resources/overhead_mem_alloc.png)
+**Figure 2: Memory Allocated per Move (Overhead)** ![Overhead Memory Allocated](sources/overhead_mem_alloc.png)
 
-**Figure 3: Cumulative RAM Consumed** ![Cumulative RAM](resources/cumulative_ram.png)
+**Figure 3: Cumulative RAM Consumed** ![Cumulative RAM](sources/cumulative_ram.png)
 
-**Figure 4: Number of Symmetries Stored by Minimax (Transposition Table)** ![Transposition Table Sizes](resources/transpositions_learned.png)
+**Figure 4: Number of Symmetries Stored by Minimax (Transposition Table)** ![Transposition Table Sizes](sources/transpositions_learned.png)
 
 ### Complete Data Table (Per Game)
 
