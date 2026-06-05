@@ -12,8 +12,8 @@ The main goal of this project was not merely to build an agent capable of playin
 In its original variant, Gomoku is played on a 19x19 board, and pieces can be placed anywhere on the board (in a free space). The first player to place 5 of their pieces in a row, column, or diagonal wins (unlike 3 in Tic-Tac-Toe).
 
 To make the RL agent's training viable and to minimize the number of moves analyzed by Minimax, I imposed the following constraints:
-i) The first move must be made in the center of the board (in my 20x20 dimension variant).
-ii) Any subsequent move must be adjacent to an already existing piece on the board (up, down, left, or right).
+- i) The first move must be made in the center of the board (in my 20x20 dimension variant)
+- ii) Any subsequent move must be adjacent to an already existing piece on the board (up, down, left, or right)
 
 This decision limits the game to a single dense cluster.
 
@@ -43,7 +43,7 @@ To achieve production speeds, I completely rewrote the heuristic evaluation engi
 - **Mathematical Encoding in Base 3**: Manipulating String structures in memory (allocation, concatenation, comparison) is a slow operation that generates too much overhead. To eliminate this drawback, I looked at the cell states at a purely numerical level. Each cell on the Gomoku board can have exactly 3 states: empty space (0), current player's piece (1), or opponent's piece (2). Looking at things this way, any sequence of 7 pieces simply becomes a number written in a base-3 numeral system.
 - **Generating the Precalculated Score Table (Lookup Array)**: The unique value of any 7-cell window is calculated by multiplying each cell value by the corresponding power of 3 ($3^0, 3^1, ..., 3^6$). The maximum possible value for such a window is $3^7 - 1$, which is exactly 2186. Having such a small and strictly delimited state space (2187 possible combinations), I was able to completely drop the Hash Map (Dictionary) structure in favor of a simple one-dimensional array allocated contiguously in memory.
 - At game initialization (boot time), the system iterates from 0 to 2186. Each number is decoded back into a sequence of 7 states and evaluated slowly based on exponential heuristic rules (checking if it's an open line of 4, a line of 3 blocked at one end, etc.). The obtained score is saved in the array at the exact index corresponding to that number. This costly operation is executed only once during the entire run.
-- **Real-Time Extraction and Evaluation ($O(1)$)**: The algorithm traverses the rows, columns, and diagonals strictly within the limits of the active area (bounding box) and sequentially extracts the 7-element windows. For each window, the polynomial value in base 3 is calculated instantaneously via a dot product between the cell states vector and a precalculated vector of powers of 3. The entire heuristic evaluation process of that pattern is now reduced to accessing a memory address: `score = lookup_array[base_3_value]`.
+- **Real-Time Extraction and Evaluation (*O(1)*)**: The algorithm traverses the rows, columns, and diagonals strictly within the limits of the active area (bounding box) and sequentially extracts the 7-element windows. For each window, the polynomial value in base 3 is calculated instantaneously via a dot product between the cell states vector and a precalculated vector of powers of 3. The entire heuristic evaluation process of that pattern is now reduced to accessing a memory address: `score = lookup_array[base_3_value]`.
 
 ## 4. Reinforcement Learning Architecture
 Once I had a Minimax engine capable of playing and evaluating states at high speeds, I was able to start training the Reinforcement Learning model. I used the PPO (Proximal Policy Optimization) algorithm, an Actor-Critic type architecture, specifically Maskable PPO. This is a suitable optimization that fits with the valid moves frontier from the Environment, thus eliminating all invalid moves.
