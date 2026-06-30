@@ -9,7 +9,7 @@ Year III; CTI; Group: 364
 * **Cleaned Scripts:** Added `train_cleaned.py` for a more streamlined view of the self-play training loop, and `benchmark_no_stats.py` for fast win/loss/draw evaluation without the heavy overhead of memory and time profiling.
 
 **Watch the RL Agent (PPO - Phase 27) defeat Minimax D3:**
-![PPO vs Minimax Demonstration](sources/ppo27_vs_mmd3.mp4)
+<video src="sources/ppo27_vs_mmd3.mp4" autoplay loop muted playsinline width="600px"></video>
 
 ## 1. Introduction: Why Gomoku and why Reinforcement Learning?
 For this project, I chose Gomoku, a much larger-scale generalization of classic Tic-Tac-Toe. The reasoning was twofold: on the one hand, it is a game with simple and elegant mechanics that I was familiar with, and on the other hand, from an algorithmic perspective, it is sufficiently complex. 
