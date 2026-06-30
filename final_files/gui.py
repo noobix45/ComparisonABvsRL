@@ -62,19 +62,19 @@ def menu_choice(screen, font, title, options):
         pygame.display.flip()
 
 #instantiaza agentul
-def load_agent(agent_type, player_id, depth=2):
+def load_agent(agent_type, player_id, depth=2, deterministic=False):
     if agent_type == "minimax":
         return MinimaxAgent2(player_id=player_id, max_depth=depth)
     elif agent_type == "ppo":
-        agent = PPOOpponentAgent("../move/models/phase24/remove1038.zip") 
+        agent = PPOOpponentAgent("../move/models/phase27/phase27_final.zip", deterministic=deterministic) 
         agent.player_id = player_id
         return agent
     return None
 
-def play_game(screen, font, p1_type, p2_type, depth):
+def play_game(screen, font, p1_type, p2_type, depth, deterministic, n_random_moves=0):
     engine = GameEngine(size=GRID_SIZE)
-    p1 = load_agent(p1_type, 1, depth)
-    p2 = load_agent(p2_type, -1, depth)
+    p1 = load_agent(p1_type, 1, depth, deterministic)
+    p2 = load_agent(p2_type, -1, depth, deterministic)
     
     clock = pygame.time.Clock()
     game_over = False
@@ -103,9 +103,9 @@ def play_game(screen, font, p1_type, p2_type, depth):
         pygame.draw.rect(screen, (210, 210, 220), (0, BOARD_SIZE, BOARD_SIZE, PANEL_HEIGHT))
         
         if game_over:
-            status = f"Câștigător: {'X' if engine.winner == 1 else 'O'}! Click pt meniu."
+            status = f"Castigator: {'X' if engine.winner == 1 else 'O'}! Click pt meniu."
         else:
-            status = f"Rândul: {'X' if engine.current_player == 1 else 'O'} ({p1_type if engine.current_player == 1 else p2_type})"
+            status = f"Randul: {'X' if engine.current_player == 1 else 'O'} ({p1_type if engine.current_player == 1 else p2_type})"
             
         screen.blit(font.render(status, True, TEXT_COLOR), (20, BOARD_SIZE + 20))
         pygame.display.flip()
@@ -120,7 +120,7 @@ def play_game(screen, font, p1_type, p2_type, depth):
             draw_board()
             
             #prima mutare e random la agenti
-            if engine.move_count == 0:
+            if deterministic and engine.move_count < n_random_moves:
                 move = random.choice(list(engine.valid_moves))
             else:
                 move = current_agent.get_action(engine)
@@ -131,6 +131,8 @@ def play_game(screen, font, p1_type, p2_type, depth):
                 if engine.winner != 0 or not engine.valid_moves:
                     game_over = True
             draw_board()
+
+            pygame.time.wait(300)
 
         # input user
         for event in pygame.event.get():
@@ -159,6 +161,9 @@ def main():
     pygame.display.set_caption("Gomoku Arena")
     font = pygame.font.SysFont("Arial", 20, bold=True)
 
+    USE_DETERMINISTIC = True
+    N_RANDOM_MOVES = 0
+
     while True:
         modes = [
             ("Om vs Minimax", ("human", "minimax")), 
@@ -174,15 +179,15 @@ def main():
         # alegerae adancimii daca unul din agenti este minimax
         depth = 2
         if "minimax" in [p1_type, p2_type]:
-            depths = [("Adâncime 1 (Rapid)", 1), ("Adâncime 2 (Mediu)", 2), ("Adâncime 3 (Greu)", 3)]
+            depths = [("Adancime 1 (Rapid)", 1), ("Adancime 2 (Mediu)", 2), ("Adancime 3 (Greu)", 3)]
             depth_choice = menu_choice(screen, font, "Alege Dificultatea Minimax", depths)
             if not depth_choice: break
             depth = depth_choice
 
         # aleg ordinea in care incepe jocul
         starters = [
-            (f"Începe {p1_type.upper()} (X)", 1),
-            (f"Începe {p2_type.upper()} (X)", 2)
+            (f"Incepe {p1_type.upper()} (X)", 1),
+            (f"Incepe {p2_type.upper()} (X)", 2)
         ]
         starter_choice = menu_choice(screen, font, "Cine face prima mutare?", starters)
         if not starter_choice: break
@@ -191,13 +196,13 @@ def main():
         if starter_choice == 2:
             p1_type, p2_type = p2_type, p1_type
 
-        history = play_game(screen, font, p1_type, p2_type, depth)
+        history = play_game(screen, font, p1_type, p2_type, depth, USE_DETERMINISTIC, N_RANDOM_MOVES)
         
         if history:
             filename = f"replay_{int(time.time())}.json"
             with open(filename, "w") as f:
                 json.dump({"p1": p1_type, "p2": p2_type, "moves": history}, f, indent=4)
-            print(f"Meci salvat în {filename}")
+            print(f"Meci salvat in {filename}")
 
 if __name__ == "__main__":
     main()

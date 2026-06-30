@@ -3,6 +3,14 @@
 **Ioniță Cătălin-Alexandru**
 Year III; CTI; Group: 364
 
+## Latest Updates
+* **Phase 27 Model Released:** Added the highly stable `phase27_final` model to the repository. This is currently the best performing agent, successfully generalizing and consistently defeating the Minimax (Depth 3) agent, especially when taking the initiative (playing as X).
+* **Video Proof of Concept:** Added a demonstration video in the `sources/` directory showing the `phase27_final` agent outplaying the Minimax algorithm.
+* **Cleaned Scripts:** Added `train_cleaned.py` for a more streamlined view of the self-play training loop, and `benchmark_no_stats.py` for fast win/loss/draw evaluation without the heavy overhead of memory and time profiling.
+
+**Watch the RL Agent (PPO - Phase 27) defeat Minimax D3:**
+![PPO vs Minimax Demonstration](sources/ppo27_vs_mmd3.mp4)
+
 ## 1. Introduction: Why Gomoku and why Reinforcement Learning?
 For this project, I chose Gomoku, a much larger-scale generalization of classic Tic-Tac-Toe. The reasoning was twofold: on the one hand, it is a game with simple and elegant mechanics that I was familiar with, and on the other hand, from an algorithmic perspective, it is sufficiently complex. 
 
@@ -102,6 +110,18 @@ This project explored the boundary between deterministic computation, based on b
 - Farama Foundation. Gymnasium: A standard API for reinforcement learning. Available at: https://gymnasium.farama.org/
 - Nicholas Renotte (2022). Reinforcement Learning in 3 hours | Full Course using Python. https://www.youtube.com/watch?v=Mut_u40Sqz4
 
+## 8. Repository Structure & Key Files
+
+This repository contains the complete pipeline for the Gomoku environment, heuristic search, and Reinforcement Learning training:
+
+* **`GameData.py`**: The core of the project. Contains the `GameEngine` logic, the highly optimized base-3 mathematical heuristic evaluation engine, and the Alpha-Beta `MinimaxAgent2`.
+* **`CnnPolicy.py`**: Defines the `CustomCNN` architecture (the feature extractor). It processes the 20x20 board state across 4 channels (agent's pieces, opponent's pieces, valid moves frontier, and threat map) to feed into the Maskable PPO algorithm.
+* **`env_wrapper.py`**: Contains `GomokuGymEnv`, a custom Gymnasium environment that wraps the game engine, manages symmetries (data augmentation), and provides observations, rewards, and action masks for the RL agent.
+* **`ai_vs_ai.py`**: A Pygame-based rendering script used to visually pit two agents against each other (e.g., PPO vs. Minimax or PPO vs. PPO).
+* **`benchmark.py` & `benchmark_no_stats.py`**: Scripts used to mathematically evaluate the RL agent against Minimax. `benchmark.py` includes heavy memory tracking and time profiling, while `benchmark_no_stats.py` is a lightweight version focused solely on fast win/loss outcomes.
+* **`train_cleaned.py`, `train_cloud.py`, `ft.py`**: Various iterations of the training pipeline. `train_cleaned.py` provides the most streamlined version of the Maskable PPO self-play training loop, including the Opponent Pool callback and Curriculum Learning mechanisms.
+* **`models/` directory**: Contains the pre-trained agents. It is highly recommended to run tests against the **`phase27_final`** model, which is currently the most robust and stable neural agent in the repository.
+* **`gui.py`**: A Pygame-based interface for playing against the PPO agent and Minimax agent; Can also be used to watch agents play against eachother.
 ---
 
 ## Appendix A: Complete Logs and Training Graphs
